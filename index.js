@@ -116,7 +116,6 @@ client.connect((err) => {
 
 
   //  make admin
-
   app.put("/makeAdmin", async (req, res) => {
     const filter = { email: req.body.email };
     const result = await usersCollection.find(filter).toArray();
@@ -125,6 +124,12 @@ client.connect((err) => {
         $set: { role: "admin" },
       });
     }
+  });
+
+  /// all User
+  app.get("/allUsers", async (req, res) => {
+    const result = await usersCollection.find({}).toArray();
+    res.send(result);
   });
 
   // check admin or not
