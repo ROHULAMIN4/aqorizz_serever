@@ -147,18 +147,31 @@ client.connect((err) => {
   });
 
 
-  //  make admin
-  app.put("/makeAdmin", async (req, res) => {
-    const filter = { email: req.body.email };
-    const result = await usersCollection.find(filter).toArray();
-    if (result) {
-      const documents = await usersCollection.updateOne(filter, {
-        $set: { role: "admin" },
-      });
-    }
-    const updated = await usersCollection.updateOne(filter, updateDoc);
-            res.send(updated);
-  });
+  // //  make admin
+  // app.put("/makeAdmin", async (req, res) => {
+  //   const filter = { email: req.body.email };
+  //   const result = await usersCollection.find(filter).toArray();
+  //   if (result) {
+  //     const documents = await usersCollection.updateOne(filter, {
+  //       $set: { role: "admin" },
+  //     });
+  //   }
+  //   const updated = await usersCollection.updateOne(filter, updateDoc);
+  //           res.send(updated);
+  // });
+
+//  make admin
+app.put("/makeAdmin", async (req, res) => {
+  const filter = { email: req.body.email };
+const updateDoc = {
+              $set: {
+                  role: 'admin'
+              },
+          };
+          const result = await usersCollection.updateOne(filter, updateDoc);
+          res.send(result);
+      })
+
 
   /// all User
   app.get("/allUsers", async (req, res) => {
