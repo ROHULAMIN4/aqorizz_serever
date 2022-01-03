@@ -80,27 +80,37 @@ client.connect((err) => {
     res.send(result);
   });
 
+  
   /// all order
   app.get("/allOrders", async (req, res) => {
     const result = await ordersCollection.find({}).toArray();
     res.send(result);
   });
 
-  //  my order
+  // //  my order
 
-  app.get("/myOrder/:email", async (req, res) => {
+  // app.get("/myOrder/:email", async (req, res) => {
 
-    const email = req.query.email;
-            if (req.decodedUserEmail === email) {
-                const query = { email: email };
-                const cursor = ordersCollection.find(query);
-                const orders = await cursor.toArray();
-                res.json(orders);
-            }
-            else {
-                res.status(401).json({ message: 'User not authorized' })
-            }
-  });
+  //   const email = req.query.email;
+  //           if (req.decodedUserEmail === email) {
+  //               const query = { email: email };
+  //               const cursor = ordersCollection.find(query);
+  //               const orders = await cursor.toArray();
+  //               res.json(orders);
+  //           }
+  //           else {
+  //               res.status(401).json({ message: 'User not authorized' })
+  //           }
+  // });
+
+    //  my order
+
+    app.get("/myOrder/:email", async (req, res) => {
+      const result = await ordersCollection
+        .find({ email: req.params.email })
+        .toArray();
+      res.send(result);
+    });
 
   //Delete Order 
 
