@@ -156,6 +156,7 @@ client.connect((err) => {
         $set: { role: "admin" },
       });
     }
+            res.send(result);
   });
 
   /// all User
