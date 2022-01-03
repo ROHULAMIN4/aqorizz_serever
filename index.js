@@ -12,11 +12,11 @@ const port = process.env.PORT || 5000;
 
 // firebase admin initialization 
 
-var serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+// var serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
+// admin.initializeApp({
+//     credential: admin.credential.cert(serviceAccount)
+// });
 
 
 //middlewire
@@ -28,19 +28,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.korjs.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-async function verifyToken(req, res, next) {
-  if (req.headers?.authorization?.startsWith('Bearer ')) {
-      const idToken = req.headers.authorization.split('Bearer ')[1];
-      try {
-          const decodedUser = await admin.auth().verifyIdToken(idToken);
-          req.decodedUserEmail = decodedUser.email;
-      }
-      catch {
+// async function verifyToken(req, res, next) {
+//   if (req.headers?.authorization?.startsWith('Bearer ')) {
+//       const idToken = req.headers.authorization.split('Bearer ')[1];
+//       try {
+//           const decodedUser = await admin.auth().verifyIdToken(idToken);
+//           req.decodedUserEmail = decodedUser.email;
+//       }
+//       catch {
 
-      }
-  }
-  next();
-}
+//       }
+//   }
+//   next();
+// }
 
 app.get("/", (req, res) => {
   res.send("Aqurizzzzz Server connected");
@@ -75,7 +75,7 @@ client.connect((err) => {
 
   // insert order 
 
-  app.post("/addOrders", verifyToken, async (req, res) => {
+  app.post("/addOrders", async (req, res) => {
     const result = await ordersCollection.insertOne(req.body);
     res.send(result);
   });
