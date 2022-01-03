@@ -2,13 +2,24 @@ const express = require('express')
 const bodyParser = require("body-parser");
 const app = express()
 const cors = require('cors');
-
+var admin = require("firebase-admin");
 require('dotenv').config();
 const { MongoClient } = require('mongodb');
 const ObjectId = require("mongodb").ObjectId;
 // const port = 5000;
 const port = process.env.PORT || 5000;
 
+
+// firebase admin initialization 
+
+var serviceAccount = JSON.parse('./aqorizz-firebase-adminsdk-necbl-887dce047d.json');
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+
+
+//middlewire
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -16,6 +27,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.korjs.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+async function verifyToken(req, res, next) {
+  if (req.headers?.authorization?.startsWith('Bearer ')) {
+      const idToken = req.headers.authorization.split('Bearer ')[1];
+      try {
+          const decodedUser = await admin.auth().verifyIdToken(idToken);
+          req.decodedUserEmail = decodedUser.email;
+      }
+      catch {
+
+      }
+  }
+  next();
+}
 
 app.get("/", (req, res) => {
   res.send("Aqurizzzzz Server connected");
@@ -50,7 +75,7 @@ client.connect((err) => {
 
   // insert order 
 
-  app.post("/addOrders", async (req, res) => {
+  app.post("/addOrders", verifyToken, async (req, res) => {
     const result = await ordersCollection.insertOne(req.body);
     res.send(result);
   });
@@ -64,10 +89,17 @@ client.connect((err) => {
   //  my order
 
   app.get("/myOrder/:email", async (req, res) => {
-    const result = await ordersCollection
-      .find({ email: req.params.email })
-      .toArray();
-    res.send(result);
+
+    const email = req.query.email;
+            if (req.decodedUserEmail === email) {
+                const query = { email: email };
+                const cursor = ordersCollection.find(query);
+                const orders = await cursor.toArray();
+                res.json(orders);
+            }
+            else {
+                res.status(401).json({ message: 'User not authorized' })
+            }
   });
 
   //Delete Order 
