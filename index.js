@@ -12,7 +12,7 @@ const port = process.env.PORT || 5000;
 
 // firebase admin initialization 
 
-var serviceAccount = JSON.parse('./aqorizz-firebase-adminsdk-necbl-887dce047d.json');
+var serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
