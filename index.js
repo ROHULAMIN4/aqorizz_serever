@@ -197,21 +197,37 @@ const updateDoc = {
     res.send(result);
   });
 
-
-
-
-  // status update
-  app.put("/statusUpdate/:id", async (req, res) => {
-    const filter = { _id: ObjectId(req.params.id) };
-    console.log(req.params.id);
-    const result = await ordersCollection.updateOne(filter, {
-      $set: {
-        status: req.body.status,
-      },
-    });
-    res.send(result);
-    console.log(result);
-  });
+ //update order status
+ app.put('/statusUpdate/:id', async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: ObjectId(id) };
+  const options = { upsert: true };
+  const updateDoc = {
+    $set: {
+      status: "Shipped",
+    },
+  };
+  const result = await ordersCollection.updateOne(filter, updateDoc, options);
+  res.json(result);
 });
 
+
+  // // status update
+  // app.put("/statusUpdate/:id", async (req, res) => {
+  //   const filter = { _id: ObjectId(req.params.id) };
+  //   console.log(req.params.id);
+  //   const result = await ordersCollection.updateOne(filter, {
+  //     $set: {
+  //       status: req.body.status,
+  //     },
+  //   });
+  //   res.send(result);
+  //   console.log(result);
+  // });
+});
+
+
+
+
 app.listen(process.env.PORT || port);
+
