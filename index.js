@@ -156,7 +156,8 @@ client.connect((err) => {
         $set: { role: "admin" },
       });
     }
-            res.send(result);
+    const updated = await usersCollection.updateOne(filter, updateDoc);
+            res.send(updated);
   });
 
   /// all User
